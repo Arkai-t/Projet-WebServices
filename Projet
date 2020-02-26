@@ -15,7 +15,7 @@
         <div class="card">
             <div class="card-body">
                 <p>Générer des graphiques relatif aux partages sur vos sites !</p>
-                <form id="formulaire" onclick="genererGraphiques()">
+                <form id="formulaire" onclick="tester()">
                     <input type="text" id="siteWeb" placeholder="Site web" required>
                     <br>
                     <span id="ajoutChamp"></span>
@@ -23,13 +23,13 @@
                     <a onclick="ajouterChamp()">Ajouter un champ de saisie</a>
                     <br><br>
                     <a onclick="supprimerDernierChamp()" id="lienSupprimerChamp" hidden>Supprimer le dernier champ de saisie</a>
-                    <br><br>
+                    <br id="br1" hidden><br id="br2" hidden>
                     <input type="submit" value="Générer">
                 </form>
             </div>
         </div>
         <br><br>
-        <div class="card text-center" id="resultats" hidden>
+        <div class="card text-center" id="resultats"><!--rajouter hidden-->
             <div class="card-title">Résultats :</div>
             <div class="card-body">
                 <p id="contenu"></p>
@@ -38,20 +38,41 @@
         </div>
     </div>
     <script>
-        var tabDataTest = [27,25,60,31,25,39,25,31,26,28,80,28,27,31,27,29,26,35,70,25];
-
-        function genererGraphiques(){
-            document.getElementById('resultats').removeAttribute("hidden");
-            requetteGraphique('lc', 700, 500, tabDataTest, '');
+        function tester(){
+            genererGraphique();
+            afficherData();
         }
 
-        function requetteGraphique(type, width, height, data, labels){
-            url = 'https://image-charts.com/chart?chan&cht=' + type + '&chs=' + width + 'x' + height + '&chd=t:' + data.join() + '&chl=' + labels;
-            document.getElementById("graph1").setAttribute('src', url);
+        //PARTIE RECUP DATA
+        function afficherData(){
+            var client = new XMLHttpRequest();
+            client.open("GET", "http://count-server.sharethis.com/v2.0/get_counts?wd=true&url=https://www.sharethis.com", true);
+            client.onreadystatechange = function() {
+                if(client.readyState == 4) {
+                    console.log(client.responseText)
+                };
+            };        
+            client.send();
+        }
+
+        //PARTIE DIAGRAMME
+        function genererGraphique(){
+            document.getElementById('resultats').removeAttribute("hidden");
+
+            var urlDiagramme = genererDiagramme('p3', 500, 500, [10,12], '', '');
+
+            document.getElementById('graph1').setAttribute('src', urlDiagramme);
+        }
+
+        function genererDiagramme(type, width, height, data, labels, colors){
+            url = 'https://image-charts.com/chart?chan=1500&cht=' + type + '&chs=' + width + 'x' + height + '&chd=t:' + data.join() + '&chdl=' + labels + '&chco=' + colors;
+            return url;
         }
 
         function ajouterChamp(){
             document.getElementById('lienSupprimerChamp').removeAttribute("hidden");
+            document.getElementById('br1').removeAttribute("hidden");
+            document.getElementById('br2').removeAttribute("hidden");
 
             var newInput = document.createElement("input");
             newInput.required = true;
