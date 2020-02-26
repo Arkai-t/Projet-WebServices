@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <title>LinkAnalitics</title>
+    </head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="">LinkAnalitics</a>
+    </nav>
+    <br>
+    <br>
+    <div class="px-5" >
+        <div class="card">
+            <div class="card-body">
+                <p>Générer des graphiques relatif aux partages sur vos sites !</p>
+                <form onclick="genererGraphiques()">
+                    <input type="text" id="siteWeb" placeholder="Site web" required><br><br>  
+                    <input type="submit" value="Générer">
+                </form>
+            </div>
+        </div>
+        <br><br>
+        <div class="card" id="resultats" hidden>
+            <div class="card-title">Résultats :</div>
+            <div class="card-body">
+                <p id="contenu"></p>
+                <img src="" id="graph1">
+            </div>
+        </div>
+    </div>
+    <script>
+        function genererGraphiques(){
+            document.getElementById('resultats').removeAttribute("hidden");
+            requetteGraphique();
+        }
+
+        function requetteGraphique(){
+            document.getElementById("graph1").setAttribute('src', 'https://image-charts.com/chart?cht=p3&chs=100x100&chd=t:60,40&chl=Hello|World&chan');
+        }
+    </script>
+</body>
+</html>
