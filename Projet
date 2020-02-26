@@ -15,14 +15,21 @@
         <div class="card">
             <div class="card-body">
                 <p>Générer des graphiques relatif aux partages sur vos sites !</p>
-                <form onclick="genererGraphiques()">
-                    <input type="text" id="siteWeb" placeholder="Site web" required><br><br>  
+                <form id="formulaire" onclick="genererGraphiques()">
+                    <input type="text" id="siteWeb" placeholder="Site web" required>
+                    <br>
+                    <span id="ajoutChamp"></span>
+                    <br>
+                    <a onclick="ajouterChamp()">Ajouter un champ de saisie</a>
+                    <br><br>
+                    <a onclick="supprimerDernierChamp()" id="lienSupprimerChamp" hidden>Supprimer le dernier champ de saisie</a>
+                    <br><br>
                     <input type="submit" value="Générer">
                 </form>
             </div>
         </div>
         <br><br>
-        <div class="card" id="resultats" hidden>
+        <div class="card text-center" id="resultats" hidden>
             <div class="card-title">Résultats :</div>
             <div class="card-body">
                 <p id="contenu"></p>
@@ -31,13 +38,35 @@
         </div>
     </div>
     <script>
+        var tabDataTest = [27,25,60,31,25,39,25,31,26,28,80,28,27,31,27,29,26,35,70,25];
+
         function genererGraphiques(){
             document.getElementById('resultats').removeAttribute("hidden");
-            requetteGraphique();
+            requetteGraphique('lc', 700, 500, tabDataTest, '');
         }
 
-        function requetteGraphique(){
-            document.getElementById("graph1").setAttribute('src', 'https://image-charts.com/chart?cht=p3&chs=100x100&chd=t:60,40&chl=Hello|World&chan');
+        function requetteGraphique(type, width, height, data, labels){
+            url = 'https://image-charts.com/chart?chan&cht=' + type + '&chs=' + width + 'x' + height + '&chd=t:' + data.join() + '&chl=' + labels;
+            document.getElementById("graph1").setAttribute('src', url);
+        }
+
+        function ajouterChamp(){
+            document.getElementById('lienSupprimerChamp').removeAttribute("hidden");
+
+            var newInput = document.createElement("input");
+            newInput.required = true;
+            newInput.setAttribute('type',"text");
+            newInput.setAttribute('placeholder',"Site web");
+
+            document.getElementById('ajoutChamp').appendChild(document.createElement("BR"));
+            document.getElementById('ajoutChamp').appendChild(newInput);
+            document.getElementById('ajoutChamp').appendChild(document.createElement("BR"));
+        }
+
+        function supprimerDernierChamp(){
+            for(let i = 0; i < 3; i++){
+                document.getElementById('ajoutChamp').removeChild(document.getElementById('ajoutChamp').lastChild);
+            }            
         }
     </script>
 </body>
