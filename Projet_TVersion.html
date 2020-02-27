@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <title>LinkAnalitics</title>
+    </head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="">LinkAnalitics</a>
+    </nav>
+    <br>
+    <br>
+    <div class="px-5" >
+        <div class="card">
+            <div class="card-body">
+                <p>Générer des graphiques relatifs aux partages sur vos sites !</p>
+                <form id="formulaire" onclick="tester()">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">http://mywebsite.com/</span>
+                        </div>
+                        <input type="text" id="siteWeb" class="form-control" required>
+                    </div>
+                    <span id="ajoutChamp"></span>
+                    <br>
+                    <button class="btn btn-dark" onclick="ajouterChamp()">Ajouter un champ de saisie</button>
+                    <br><br>
+                    <!--<button class="btn btn-danger" onclick="supprimerDernierChamp()" id="lienSupprimerChamp" hidden>Supprimer le dernier champ de saisie</button>-->
+                    
+                    <input class="btn btn-warning" type="submit" value="Générer">
+                </form>
+            </div>
+        </div>
+        <br><br>
+        <div class="card text-center" id="resultats" hidden><!--rajouter hidden-->
+            <div class="card-title">Résultats :</div>
+            <div class="card-body">
+                <p id="contenu"></p>
+                <img src="" id="graph1">
+            </div>
+        </div>
+    </div>
+    <script>
+        var nbChamps = 1;
+
+        function tester(){
+            genererGraphique();
+            afficherData();
+        }
+
+        //PARTIE RECUP DATA
+        function afficherData(){
+            var client = new XMLHttpRequest();
+            client.open("GET", "http://count-server.sharethis.com/v2.0/get_counts?wd=true&url=https://www.sharethis.com", true);
+            client.onreadystatechange = function() {
+                if(client.readyState == 4) {
+                    console.log(client.responseText)
+                };
+            };        
+            client.send();
+        }
+
+        //PARTIE DIAGRAMME
+        function genererGraphique(){
+            document.getElementById('resultats').removeAttribute("hidden");
+
+            var urlDiagramme = genererDiagramme('bvs', 300, 300, [10,12], '', '');
+
+            document.getElementById('graph1').setAttribute('src', urlDiagramme);
+        }
+
+        function genererDiagramme(type, width, height, data, labels, colors){
+            url = 'https://image-charts.com/chart?chan=1500&cht=' + type + '&chs=' + width + 'x' + height + '&chd=t:' + data.join() + '&chdl=' + labels + '&chco=' + colors;
+            return url;
+        }
+
+        function ajouterChamp(){
+                       
+            var newDivGroup = document.createElement("div");
+            newDivGroup.setAttribute('class',"input-group mb-3");
+
+            var newDivGroupPrepend = document.createElement("div");
+            newDivGroupPrepend.setAttribute('class',"input-group-prepend");
+
+            var newSpan = document.createElement("span");
+            newSpan.setAttribute('class',"input-group-text");
+            newSpan.innerHTML="http://mywebsite.com/";
+
+            var newInput = document.createElement("input");
+            newInput.required = true;
+            newInput.setAttribute('type',"text");
+            newInput.setAttribute('class',"form-control");
+
+            var newDivGroupAppend = document.createElement("div");
+            newDivGroupAppend.setAttribute('class',"input-group-append");
+
+            var newButton = document.createElement("button");
+            newButton.setAttribute('class',"btn btn-outline-danger");
+            newButton.setAttribute('onclick',"supprimerChampCourant()");
+            newButton.setAttribute('id',"lienSupprimerChamp");
+            newButton.innerHTML="Supprimer";
+            
+            newDivGroupPrepend.appendChild(newSpan);
+            newDivGroupAppend.appendChild(newButton);
+            newDivGroup.appendChild(newDivGroupPrepend);
+            newDivGroup.appendChild(newInput);
+            newDivGroup.appendChild(newDivGroupAppend);
+            
+            document.getElementById('ajoutChamp').appendChild(document.createElement("BR"));
+            document.getElementById('ajoutChamp').appendChild(newDivGroup);
+
+            nbChamps++;
+        }
+
+        function supprimerDernierChamp(){
+            for(let i = 0; i < 3; i++){
+                document.getElementById('ajoutChamp').removeChild(document.getElementById('ajoutChamp').lastChild);
+            }
+            nbChamps--;
+            if(nbChamps<=1) 
+            {
+                document.getElementById('lienSupprimerChamp').setAttribute('hidden',"true");
+            }            
+        }
+
+        f
+    </script>
+</body>
+</html>
