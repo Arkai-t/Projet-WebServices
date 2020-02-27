@@ -4,7 +4,7 @@
         <meta charset='utf-8'>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <title>LinkAnalitics</title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>-->
     </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -117,7 +117,7 @@
         function supprimerChampCourant(divGroup)
         {
             divGroupeId = divGroup.id;
-            $("[id="+divGroupeId+"]").remove();
+            document.getElementById(divGroupeId).remove();
         }
     </script>
 </body>
