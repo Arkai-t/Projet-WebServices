@@ -4,6 +4,7 @@
         <meta charset='utf-8'>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <title>LinkAnalitics</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -26,7 +27,6 @@
                     <br>
                     <button class="btn btn-dark" onclick="ajouterChamp()">Ajouter un champ de saisie</button>
                     <br><br>
-                    <!--<button class="btn btn-danger" onclick="supprimerDernierChamp()" id="lienSupprimerChamp" hidden>Supprimer le dernier champ de saisie</button>-->
                     
                     <input class="btn btn-warning" type="submit" value="Générer">
                 </form>
@@ -79,6 +79,7 @@
                        
             var newDivGroup = document.createElement("div");
             newDivGroup.setAttribute('class',"input-group mb-3");
+            newDivGroup.setAttribute('id',"divGroup"+nbChamps.toString());
 
             var newDivGroupPrepend = document.createElement("div");
             newDivGroupPrepend.setAttribute('class',"input-group-prepend");
@@ -97,7 +98,8 @@
 
             var newButton = document.createElement("button");
             newButton.setAttribute('class',"btn btn-outline-danger");
-            newButton.setAttribute('onclick',"supprimerChampCourant()");
+            var newDivGroupId = newDivGroup.id;
+            newButton.setAttribute('onclick',"supprimerChampCourant("+newDivGroupId+")");
             newButton.setAttribute('id',"lienSupprimerChamp");
             newButton.innerHTML="Supprimer";
             
@@ -107,24 +109,16 @@
             newDivGroup.appendChild(newInput);
             newDivGroup.appendChild(newDivGroupAppend);
             
-            document.getElementById('ajoutChamp').appendChild(document.createElement("BR"));
             document.getElementById('ajoutChamp').appendChild(newDivGroup);
 
             nbChamps++;
         }
 
-        function supprimerDernierChamp(){
-            for(let i = 0; i < 3; i++){
-                document.getElementById('ajoutChamp').removeChild(document.getElementById('ajoutChamp').lastChild);
-            }
-            nbChamps--;
-            if(nbChamps<=1) 
-            {
-                document.getElementById('lienSupprimerChamp').setAttribute('hidden',"true");
-            }            
+        function supprimerChampCourant(divGroup)
+        {
+            divGroupeId = divGroup.id;
+            $("[id="+divGroupeId+"]").remove();
         }
-
-        f
     </script>
 </body>
 </html>
