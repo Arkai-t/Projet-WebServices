@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="icon" type="image/png" href="https://cdn.discordapp.com/attachments/682244247965270038/682706262269624325/cone-clipart-road-work-21.png">
+        <title>LinkAnalytics</title>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script type="text/javascript" src="validator.min.js"></script>
+
+    </head>
+<body id="corps">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="accueil.html" id="coucou"> <img src="https://cdn.discordapp.com/attachments/682244247965270038/682706262269624325/cone-clipart-road-work-21.png" width="25" height="25"> LinkAnalytics</a>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+
+            <li class="nav-item">
+                <a class="nav-link" href="quiSommesNous.html"> Qui sommes-nous ? </a>
+            </li>
+
+            <li class="nav-item">
+                <a id="dlCors" class="nav-link" href="https://chrome.google.com/webstore/detail/allow-cors-access-control/lhobafahddgcelffkeicbaginigeejlf"> Télécharger CORS add-on </a>
+            </li>
+            </ul>
+        </div> 
+    </nav>
+
+    <div class="px-5" >
+        <br>
+        <div class="alert alert-danger" role="alert" id="monAlerteCORS" hidden>
+                Pour le bon fonctionnement du site, activez ou installez <a href="https://chrome.google.com/webstore/detail/allow-cors-access-control/lhobafahddgcelffkeicbaginigeejlf" class="alert-link">l'addon Allow CORS</a>.
+        </div>
+        <div class="alert alert-danger" role="alert" id="monAlerteLien" hidden>
+            La valeur saisie n'est pas un lien
+        </div>
+        <br id="brAlerte">
+
+        <div class="card" id="donnees">
+            <div class="card-header bg-warning" onclick="affDonneesContent()" style="cursor: pointer;">
+                Vos sites
+            </div>
+
+            <div class="card-body" id="donneesContent">
+                <p>Générez des graphiques relatifs aux partages sur vos sites !</p>
+
+
+                <form id="formulaire" action="javascript:void(0);" onsubmit="recupEnregistrerAffData()">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">Site internet</span>
+                        </div>
+                        <input type="text" id="input1" class="form-control" required>
+                    </div>
+                    <span id="ajoutChamp"></span>
+                    <br>
+                    <input class="btn btn-warning" type="submit" value="Générer">
+                    <label><input style="margin-left:3em;" type="checkbox" id="isFacebook" value> Ne pas prendre en compte Facebook</label>
+                    <br><br>
+                    <button class="btn btn-dark" onclick="ajouterChamp()" id="btAjout">Ajouter un champ de saisie</button>    
+                </form>
+                
+            </div>
+            
+        </div>
+
+        <br><br>
+
+        <div class="card" id="resultats" hidden>
+            <div class="card-header bg-warning" onclick="affResultatsContent()" style="cursor: pointer;">
+                Graphiques résultats
+            </div>
+            <div class="card-body text-center" id="resultatsContent">
+                <p id="contenu"></p>
+                <img src="" id="graph1">
+                <iframe src="" id="graph2" width="1350" height="500"></iframe>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        
+        var nbChamps = 1;
+        var limiteNbChamps = 5;
+        
+        //PARTIE RECUP DATA
+
+        function recupEnregistrerAffData()
+        {   
+            document.getElementById('monAlerteLien').removeAttribute('hidden');
+            
+            document.getElementById('monAlerteCORS').setAttribute('hidden','');
+            document.getElementById('monAlerteLien').setAttribute('hidden','');
+            document.getElementById('brAlerte').removeAttribute('hidden');
+            document.getElementById('dlCors').removeAttribute('style');
+            
+            var urlComplete = "http://count-server.sharethis.com/v2.0/get_counts?wd=true&url=";
+            var urlAnalyse = document.getElementById('input1').value;
+            urlComplete += urlAnalyse;
+
+            if(validator.isURL(urlAnalyse))
+            {
+                var client = new XMLHttpRequest();
+                client.open("GET", urlComplete, true);
+                client.onreadystatechange = function() {
+                    if(client.readyState == 4) {
+                        client.onerror = function() {
+                            document.getElementById('monAlerteCORS').removeAttribute('hidden');
+                            document.getElementById('brAlerte').setAttribute('hidden','');
+                            document.getElementById('dlCors').setAttribute('style','color: #ffc107');
+                        }
+                        //Récuperer la réponse
+                        
+                        var obj = JSON.parse(client.responseText);
+                        delete obj.all;
+                        if(document.getElementById('isFacebook').checked)
+                        {
+                            delete obj.facebook;
+                        }
+                        delete obj.total;
+                        var urlSite = obj.ourl;
+                        delete obj.ourl;
+                        var Odonnees = Object.entries(obj);
+                        var donnees = new Map(Object.entries(Odonnees));
+                        
+                        //La transformer dans le bon format
+
+                        var labels = "|";
+                        var nbPartages = "";            
+
+                        donnees.forEach(([cle,val])=> labels += (`${cle}` + '|' ));
+                        donnees.forEach(([cle,val]) => nbPartages+=(`${val}` + ','));
+                        nbPartages = nbPartages.substring(0, nbPartages.length-1);
+
+                        
+                        console.log(labels + ' : ' + nbPartages);
+
+                        genererGraphique(labels, nbPartages, urlSite);
+                    };
+                };        
+                client.send();   
+            }
+            else
+            {
+                document.getElementById('monAlerteLien').removeAttribute('hidden');
+                document.getElementById('brAlerte').setAttribute('hidden','');
+            }
+        }
+
+        //PARTIE DIAGRAMME
+
+
+
+        function genererGraphique(labels, nbPartages, urlSite){
+            document.getElementById('resultats').removeAttribute("hidden");
+            $("[id=resultats]").hide(0).fadeIn(1000);
+            $("[id=resultatsContent]").slideDown(1000);
+            $("[id=donneesContent]").slideUp(1000);
+            var urlDiagramme = genererDiagramme('bvs', 300, 300, [10,12], '', '');
+
+            document.getElementById('graph2').setAttribute('src', 'recupEtEnvoiData.html?labels='+labels+'&nbPartages='+nbPartages+'&urlSite='+urlSite);
+        }
+
+        function genererDiagramme(type, width, height, data, labels, colors){
+            url = 'https://image-charts.com/chart?chan=1500&cht=' + type + '&chs=' + width + 'x' + height + '&chd=t:' + data.join() + '&chdl=' + labels + '&chco=' + colors;
+            return url;
+        }
+
+        // PARTIE SAISIE
+        function ajouterChamp(){
+
+            nbChamps++;
+
+            var newDivGroup = document.createElement("div");
+            newDivGroup.setAttribute('class',"input-group mb-3");
+            newDivGroup.setAttribute('id',"divGroup"+nbChamps.toString());
+
+            var newDivGroupPrepend = document.createElement("div");
+            newDivGroupPrepend.setAttribute('class',"input-group-prepend");
+
+            var newSpan = document.createElement("span");
+            newSpan.setAttribute('class',"input-group-text");
+            newSpan.innerHTML="Site";
+
+            var newInput = document.createElement("input");
+            newInput.required = true;
+            newInput.setAttribute('type',"text");
+            newInput.setAttribute('class',"form-control");
+            newInput.setAttribute('id',"input"+nbChamps.toString());
+
+            var newDivGroupAppend = document.createElement("div");
+            newDivGroupAppend.setAttribute('class',"input-group-append");
+
+            var newButton = document.createElement("button");
+            newButton.setAttribute('class',"btn btn-outline-danger");
+            var newDivGroupId = newDivGroup.id;
+            newButton.setAttribute('onclick',"supprimerChampCourant("+newDivGroupId+")");
+            newButton.setAttribute('id',"lienSupprimerChamp");
+            newButton.innerHTML="Supprimer";
+            
+            newDivGroupPrepend.appendChild(newSpan);
+            newDivGroupAppend.appendChild(newButton);
+            newDivGroup.appendChild(newDivGroupPrepend);
+            newDivGroup.appendChild(newInput);
+            newDivGroup.appendChild(newDivGroupAppend);
+            
+            document.getElementById('ajoutChamp').appendChild(newDivGroup);
+
+            if(nbChamps>=limiteNbChamps)
+            {
+                document.getElementById("btAjout").setAttribute('disabled',"true");
+            }
+        }
+
+        function supprimerChampCourant(divGroup)
+        {
+            nbChamps--;
+
+            divGroupeId = divGroup.id;
+            document.getElementById(divGroupeId).remove();
+            
+            if(nbChamps==4)
+            {
+                document.getElementById("btAjout").removeAttribute('disabled');
+            }
+        }
+
+        function affDonneesContent()
+        {
+            $("[id=donneesContent]").slideToggle(1000);
+        }
+
+        function affResultatsContent()
+        {
+            $("[id=resultatsContent]").slideToggle(1000);
+        }
+    </script>
+</body>
+</html>

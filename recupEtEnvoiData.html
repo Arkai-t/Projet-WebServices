@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <title>LinkAnalytics</title>
+        
+    </head>
+    <body onload="loadGraph()">
+    <form action='https://chart.googleapis.com/chart' method='POST' id='post_form'>
+        <input type='hidden' name='cht' value='p'/>
+        <input type='hidden' name='chtt' value='Ca ne marche pas'/>
+        <input type='hidden' name='chs' value='1000x300'/>
+        <input type='hidden' name='chxt' value='x,y'/>
+        <input type="hidden" name="chxl" value="0:|oui|non"/>
+        <input type='hidden' name='chd' value='t:25,37,28,102'/>
+        <input type='hidden' name='chds' value='a'/>
+        <input type='hidden' name='chco' value='ffc107'/>
+        <input type='submit' hidden/>
+    </form>
+
+    <script>
+
+        function loadGraph() {
+
+            let params = (new URL(document.location)).searchParams;
+            let labels = params.get("labels");
+            let nbPartages = params.get("nbPartages");
+            let urlSite = params.get("urlSite");
+            document.getElementsByName('chxl')[0].value="0:"+labels;
+            document.getElementsByName('chd')[0].value="t:"+nbPartages;
+            document.getElementsByName('chtt')[0].value=urlSite.toString();
+            var frm = document.getElementById('post_form');
+            if (frm) {
+                frm.submit();
+            }
+        }
+        
+    </script>
+</body>
+</html>
